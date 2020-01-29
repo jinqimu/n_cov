@@ -12,6 +12,8 @@ import time
 import sys
 import os
 import sqlite3
+from threading import Timer
+from apscheduler.schedulers.blocking import BlockingScheduler
 
 
 ## Bark_url
@@ -22,7 +24,7 @@ Bark_urls = {
     ## 'https://api.day.app/xxxxxxxxxxxxxxxxxxxxxxxxx/',
 
     ## jinqimu的服务器地址
-    ## 'http://47.100.90.173:8080/xxxxxxxxxxxxxxxxxxx/',
+    'http://47.100.90.173:8080/xxxxxxxxxxxxxxxxxxxxxx/',
 }
 ## 省份和城市（不要写“省”、“市”两字）
 provinces = {
@@ -38,6 +40,12 @@ cities = {
 ## data_base_url
 base = "http://lab.isaaclin.cn/nCoV/api/"
 
+work_dir = os.path.split(os.path.realpath(__file__))[0]
+conn = sqlite3.connect(os.path.join(work_dir, 'n_cov.db'))
+conn.text_factory = str
+conn.execute(
+    "create table if not exists table1(time int key UNIQUE NOT NULL, province text(100) NOT NULL)")
+conn.close()
 
 class redirect():
     content = ""
@@ -49,11 +57,12 @@ class redirect():
         self.content = ""
 
 
-def re(conn):
+def re():
     current = sys.stdout
     r = redirect()
     sys.stdout = r
 
+    conn = sqlite3.connect(os.path.join(work_dir, 'n_cov.db'))
     for province in provinces:
         cursor = conn.cursor()
         conn.text_factory = str
@@ -111,17 +120,12 @@ def re(conn):
         bark_t = {'title': '疫情报告！', 'body': r.content}
         for url in Bark_urls:
             requests.post(url, bark_t)
+    conn.close()
+    print("OK")
 
 
 if __name__ == "__main__":
-    work_dir = os.path.split(os.path.realpath(__file__))[0]
-
-    conn = sqlite3.connect(os.path.join(work_dir, 'n_cov.db'))
-    conn.text_factory = str
-    conn.execute(
-        "create table if not exists table1(time int key UNIQUE NOT NULL, province text(100) NOT NULL)")
-
     print("Running now!")
-    while(1):
-        re(conn)
-        time.sleep(60*10)
+    sched = BlockingScheduler()
+    sched.add_job(re, 'interval', minutes=30)
+    sched.start()
