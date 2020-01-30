@@ -8,3 +8,6 @@
 3. 在服务器或个人PC上运行并挂在后台
 
 ![Simple](https://raw.githubusercontent.com/jinqimu/cloudimg/master/img/微信图片_20200125191549.jpg)
+
+## 致谢
+感谢Isaac Lin提供数据接口：https://lab.isaaclin.cn/nCoV/
