@@ -128,4 +128,5 @@ if __name__ == "__main__":
     print("Running now!")
     sched = BlockingScheduler()
     sched.add_job(re, 'interval', minutes=30)
+    re()
     sched.start()
