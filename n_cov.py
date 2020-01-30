@@ -38,7 +38,7 @@ cities = {
     '焦作'
 }
 ## data_base_url
-base = "http://lab.isaaclin.cn/nCoV/api/"
+base = "https://lab.isaaclin.cn/nCoV/api/"
 
 work_dir = os.path.split(os.path.realpath(__file__))[0]
 conn = sqlite3.connect(os.path.join(work_dir, 'n_cov.db'))
